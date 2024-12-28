@@ -1,12 +1,41 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import {Link, useParams } from 'react-router-dom'
 import {Row, Col, Image, ListGroup, Button, Card, ListGroupItem} from 'react-bootstrap'
+import axios from 'axios'
 import Rating from '../components/Rating'
-import products from '../products'
 
 function ProductScreen({match}){
-    const { id } = useParams()
-    const product = products.find((p) => p._id === id)
+    const { id } = useParams();  
+    const [products, setProducts] = useState([]);  
+    const [product, setProduct] = useState([null]);  
+  
+    useEffect(() => {
+      
+      async function fetchProducts() {
+        try {
+            const { data } = await axios.get(`/api/products/${id}/`);
+            setProduct(data);  // Set the product data once it's fetched
+          } catch (error) {
+            console.error('Error fetching product:', error);  // Log any errors
+            
+          }
+      }
+  
+      fetchProducts();
+    }, []);  
+  
+    
+    useEffect(() => {
+      if (products.length > 0) {
+        const foundProduct = products.find(p => p._id === id);  
+        setProduct(foundProduct);  
+      }
+    }, [id, products]); 
+    
+    // if (!product) {
+    //     return <div>Loading...</div>;  // Show loading message while the product is being fetched
+    //   }
+      
     return(
 
         <div>
